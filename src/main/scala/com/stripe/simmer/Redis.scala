@@ -19,8 +19,15 @@ class Redis(host : String) extends Output with Lookup {
             case Some(cb) => {
               val str = CBToString(cb)
               val columns = str.split("\t")
-              val oldValue = aggregator.deserialize(columns(0)).get
-              aggregator.reduce(oldValue, value)
+              aggregator.deserialize(columns(0)) match {
+                case Some(oldValue) => {
+                  aggregator.reduce(oldValue, value)
+                }
+                case None => {
+                  System.err.println("Error deserializing for: " + key)
+                  value
+                }
+              }
             }
             case None => value
           }
