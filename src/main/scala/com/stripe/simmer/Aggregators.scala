@@ -115,18 +115,10 @@ class Decay(halflife : Int) extends KryoAggregator[DecayedValue] with NumericAgg
 		DecayedValue.build(value.toDouble, timestamp.toDouble, halflife.toDouble)
 	}
 
-	def timestampAsOfEndOfDay = {
-		val calendar = new GregorianCalendar
-		calendar.add(DATE, 1)
-    	calendar.set(HOUR_OF_DAY, 0)
-    	calendar.set(MINUTE, 0)
-    	calendar.set(SECOND, 0)
-    	calendar.set(MILLISECOND, 0)
-		calendar.getTimeInMillis / 1000
-	}
+	def timestamp = System.currentTimeMillis / 1000
 
 	def presentNumeric(out : DecayedValue) = {
-		val adjusted = monoid.plus(out, DecayedValue.build(0.0, timestampAsOfEndOfDay, halflife.toDouble))
+		val adjusted = monoid.plus(out, DecayedValue.build(0.0, timestamp, halflife.toDouble))
 		adjusted.value
 	}
 
